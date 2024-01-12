@@ -1,8 +1,9 @@
-# src/game.py
-import turtle
 import os
-from paddle import Paddle
+import turtle
+
 from ball import Ball
+from paddle import Paddle
+from pen import Pen
 
 
 class Game:
@@ -14,31 +15,14 @@ class Game:
         self.window.setup(width=800, height=600)
         self.window.tracer(0)
 
-        # Score
         self.score_a = 0
         self.score_b = 0
 
-        # Paddles
         self.paddle_a = Paddle("white", "square", -350, 0)
         self.paddle_b = Paddle("white", "square", 350, 0)
-
-        # Ball
         self.ball = Ball(color="white", shape="square", x=0, y=0, dx=3, dy=-1)
+        self.pen = Pen(self.score_a, self.score_b)
 
-        # Pen
-        self.pen = turtle.Turtle()
-        self.pen.speed(0)
-        self.pen.color("white")
-        self.pen.penup()
-        self.pen.hideturtle()
-        self.pen.goto(0, 260)
-        self.pen.write(
-            f"Player 1: {self.score_a} | Player 2: {self.score_b}",
-            align="center",
-            font=("Courier", 24, "normal"),
-        )
-
-        # Keyboard binding
         self.window.listen()
         self.window.onkeypress(self.paddle_a.move_up, "w")
         self.window.onkeypress(self.paddle_a.move_down, "s")
@@ -80,8 +64,6 @@ class Game:
                     self.score_b += 1
                 self.update_scores()
 
-            # Paddle and ball collisions
-            # Paddle and ball collisions
             if (
                 self.paddle_b.xcor() - 10 < self.ball.xcor() < self.paddle_b.xcor() + 10
                 and self.paddle_b.ycor() + 50
