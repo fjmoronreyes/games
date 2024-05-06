@@ -42,12 +42,12 @@ def main():
             enemy.move()
             if player.is_collision(enemy):
                 manage_collision(enemy)
-                game.update_score(100)
+                game.update_score(-100)
 
             if missile.is_collision(enemy):
                 manage_collision(enemy)
                 missile.status = "ready"
-                game.update_score(100)
+                game.update_score(+100)
                 for particle in particles:
                     particle.explode(missile.xcor(), missile.ycor())
 
@@ -56,7 +56,7 @@ def main():
             if missile.is_collision(ally):
                 manage_collision(ally)
                 missile.status = "ready"
-                game.update_score(100)
+                game.update_score(-50)
 
         for particle in particles:
             particle.move()
