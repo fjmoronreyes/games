@@ -4,52 +4,51 @@ import random
 
 delay = 0.1
 
-# scores
+# Scores
 score = 0
 high_score = 0
 
-# set up screen
-window = turtle.Screen()
-window.title("Snake")
-window.bgcolor("black")
-window.setup(width=600, height=600)
-window.tracer(0)
+# Set up the screen
+wn = turtle.Screen()
+wn.title("Snake Game")
+wn.bgcolor("black")
+wn.setup(width=600, height=600)
+wn.tracer(0)  # Turns off screen updates for manual update
 
-# snake head
+# Snake head
 head = turtle.Turtle()
-head.speed(0)
+head.speed(0)  # Animation speed (not movement speed)
 head.shape("square")
 head.color("white")
 head.penup()
 head.goto(0, 0)
 head.direction = "stop"
 
-# snake food
+# Snake food
 food = turtle.Turtle()
 food.speed(0)
 food.shape("square")
-food.color("white")
+food.color("red")
 food.penup()
 food.goto(0, 100)
 
+# List to store segments of the snake's body
 segments = []
 
-# scoreboards
-scoreboard = turtle.Turtle()
-scoreboard.speed(0)
-scoreboard.shape("square")
-scoreboard.color("white")
-scoreboard.penup()
-scoreboard.hideturtle()
-scoreboard.goto(0, 260)
-scoreboard.write(
-    "Score: 0 | Best score: 0",
-    align="center",
-    font=("Courier", 24, "normal"),
+# Score display
+score_display = turtle.Turtle()
+score_display.speed(0)
+score_display.shape("square")
+score_display.color("white")
+score_display.penup()
+score_display.hideturtle()
+score_display.goto(0, 260)
+score_display.write(
+    "Score: 0  High Score: 0", align="center", font=("Courier", 24, "normal")
 )
 
 
-# functions
+# Functions for movement
 def go_up():
     if head.direction != "down":
         head.direction = "up"
@@ -72,123 +71,107 @@ def go_right():
 
 def move():
     if head.direction == "up":
-        y = head.ycor()
-        head.sety(y + 20)
-    if head.direction == "down":
-        y = head.ycor()
-        head.sety(y - 20)
-    if head.direction == "right":
-        x = head.xcor()
-        head.setx(x + 20)
-    if head.direction == "left":
-        x = head.xcor()
-        head.setx(x - 20)
+        head.sety(head.ycor() + 20)
+    elif head.direction == "down":
+        head.sety(head.ycor() - 20)
+    elif head.direction == "right":
+        head.setx(head.xcor() + 20)
+    elif head.direction == "left":
+        head.setx(head.xcor() - 20)
 
 
-# keyboard bindings
-window.listen()
-window.onkeypress(go_up, "w")
-window.onkeypress(go_down, "s")
-window.onkeypress(go_left, "a")
-window.onkeypress(go_right, "d")
+# Keyboard bindings
+wn.listen()
+wn.onkeypress(go_up, "w")
+wn.onkeypress(go_down, "s")
+wn.onkeypress(go_left, "a")
+wn.onkeypress(go_right, "d")
 
-# Main loop
+# Main game loop
 while True:
-    window.update()
+    wn.update()
 
-    # check collision with border area
-    if (
-        head.xcor() > 290
-        or head.xcor() < -290
-        or head.ycor() > 290
-        or head.ycor() < -290
-    ):
+    # Check for collision with the border
+    if abs(head.xcor()) > 290 or abs(head.ycor()) > 290:
         time.sleep(1)
         head.goto(0, 0)
         head.direction = "stop"
 
-        # hide the segments of body
-
+        # Hide the segments
         for segment in segments:
-            segment.goto(1000, 1000)  # out of range
-        # clear the segments
+            segment.goto(1000, 1000)
+
         segments.clear()
-
-        # reset score
         score = 0
-
-        # reset delay
         delay = 0.1
-
-        scoreboard.clear()
-        scoreboard.write(
-            "score:{} | Best score {}".format(score, high_score),
+        score_display.clear()
+        score_display.write(
+            "Score: {}  High Score: {}".format(score, high_score),
             align="center",
             font=("Courier", 24, "normal"),
         )
 
-    # check collision with food
+    # Check for collision with food
     if head.distance(food) < 20:
-        # move the food to random place
-        x = random.randint(-290, 290)
-        y = random.randint(-290, 290)
+        x = random.randint(-270, 270)
+        y = random.randint(-270, 270)
         food.goto(x, y)
 
-        # add a new segment to the head
+        # Add a segment
         new_segment = turtle.Turtle()
         new_segment.speed(0)
         new_segment.shape("square")
-        new_segment.color("white")
+        new_segment.color("grey")
         new_segment.penup()
         segments.append(new_segment)
 
-        # shorten the delay
-        delay -= 0.001
-        # increase the score
+        # Increase the score
         score += 10
-
         if score > high_score:
             high_score = score
-        scoreboard.clear()
-        scoreboard.write(
-            "score:{} | Best score {}".format(score, high_score),
+
+        score_display.clear()
+        score_display.write(
+            "Score: {}  High Score: {}".format(score, high_score),
             align="center",
             font=("Courier", 24, "normal"),
         )
 
-    # move the segments in reverse order
+        # Decrease the delay (increase game speed)
+        delay -= 0.001
+
+    # Move the end segments first in reverse order
     for index in range(len(segments) - 1, 0, -1):
         x = segments[index - 1].xcor()
         y = segments[index - 1].ycor()
         segments[index].goto(x, y)
-    # move segment 0 to head
-    if len(segments) > 0:
+
+    # Move segment 0 to where the head is
+    if segments:
         x = head.xcor()
         y = head.ycor()
         segments[0].goto(x, y)
 
     move()
 
-    # check for collision with body
+    # Check for head collision with the body segments
     for segment in segments:
         if segment.distance(head) < 20:
             time.sleep(1)
             head.goto(0, 0)
             head.direction = "stop"
-
-            # hide segments
             for segment in segments:
                 segment.goto(1000, 1000)
             segments.clear()
             score = 0
             delay = 0.1
-
-            # update the score
-            sc.clear()
-            sc.write(
-                "score: {}  High score: {}".format(score, high_score),
+            score_display.clear()
+            score_display.write(
+                "Score: {}  High Score: {}".format(score, high_score),
                 align="center",
-                font=("ds-digital", 24, "normal"),
+                font=("Courier", 24, "normal"),
             )
+
     time.sleep(delay)
+
 wn.mainloop()
