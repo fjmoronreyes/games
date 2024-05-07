@@ -17,5 +17,5 @@ class Player(Sprite):
     def accelerate(self):
         self.speed += 1
 
-    def decelarate(self):
+    def decelerate(self):
         self.speed -= 1

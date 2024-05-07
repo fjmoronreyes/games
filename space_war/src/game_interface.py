@@ -39,7 +39,7 @@ def setup_keybindings(player: Player, missile: Missile) -> None:
     turtle.onkey(player.turn_right, "d")
     turtle.onkey(player.accelerate, "Up")
     turtle.onkey(player.accelerate, "w")
-    turtle.onkey(player.decelarate, "Down")
+    turtle.onkey(player.decelerate, "Down")
     turtle.onkey(player.accelerate, "s")
     turtle.onkey(
         lambda: missile.fire(player.xcor(), player.ycor(), player.heading()), "space"
